@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Студент - Долги</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="student.css">
+</head>
+<body data-page="debts">
+    <div class="page-frame">
+        <header class="topbar">
+            <div class="logo"><img src="image/logo.png" alt="Logo"></div>
+            <nav class="main-tabs">
+                <a class="main-tab" href="student-materials.html">Учебные материалы</a>
+                <a class="main-tab active" href="#">Долги</a>
+                <a class="main-tab" href="student-selfstudy.html">Самоподготовка</a>
+                <a class="main-tab" href="student-performance.html">Успеваемость</a>
+            </nav>
+            <div class="avatar" aria-hidden="true"></div>
+        </header>
+
+        <div class="workspace">
+            <aside class="sidebar">
+                <div class="topic-head"><span id="debtTopicTitle">Тема</span></div>
+                <ul class="topics" id="debtTopicItems"></ul>
+            </aside>
+
+            <main class="content">
+                <section class="card debt-card">
+                    <div class="debt-heading">Текущее задание</div>
+                    <ul class="debt-list debt-list--plain" id="currentTasksList"></ul>
+                </section>
+
+                <section class="card debt-card debt-card--follow">
+                    <div class="debt-heading">Долги</div>
+                    <ul class="debt-list" id="debtsList"></ul>
+                </section>
+            </main>
+        </div>
+    </div>
+    <script src="student-data.js"></script>
+</body>
+</html>
