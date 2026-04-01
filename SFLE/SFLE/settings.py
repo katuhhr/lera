@@ -28,10 +28,25 @@ INSTALLED_APPS = [
     
     # Локальные приложения
     'users',
-    'student',
+    #'student',
     #'admin_panel',
 ]
 
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [], # здесь можно добавить путь к папке с вашими шаблонами позже
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
 # 4. Middleware
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
