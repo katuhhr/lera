@@ -1,0 +1,83 @@
+.teacher-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #F0F2F5;
+}
+
+.topbar {
+    background-color: #FFFFFF;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+    border-bottom: 1px solid #E5E7EB;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo-section {
+    width: 240px;
+    display: flex;
+    align-items: center;
+}
+
+.main-logo {
+    height: 45px;
+    object-fit: contain;
+}
+
+.tabs {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    height: 100%;
+}
+
+.tab {
+    text-decoration: none;
+    color: #6B7280;
+    font-size: 15px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    position: relative;
+    transition: all 0.2s;
+    border-bottom: 3px solid transparent;
+}
+
+.tab:hover {
+    color: #1E3A8A;
+}
+
+.tab.active {
+    color: #1E3A8A;
+    border-bottom-color: #1E3A8A;
+    font-weight: 600;
+}
+
+.profile-section {
+    width: 240px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    color: #6B7280;
+    cursor: pointer;
+}
+
+.profile-icon-svg {
+    transition: transform 0.2s;
+}
+
+.profile-section:hover .profile-icon-svg {
+    transform: scale(1.05);
+    color: #1E3A8A;
+}
+
+.layout-body {
+    flex: 1;
+    padding: 30px 40px;
+    overflow-y: auto;
+}

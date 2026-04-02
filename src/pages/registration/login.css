@@ -1,0 +1,152 @@
+.auth-full-page {
+    width: 100vw;
+    height: 100vh;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    width: 90%;
+    max-width: 700px;
+    border-radius: 25px;
+    padding: 50px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+
+.auth-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.auth-logo {
+    height: 65px; /* Увеличено */
+    width: auto;
+}
+
+.nav-btn {
+    padding: 10px 25px;
+    border-radius: 20px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: all 0.3s ease;
+}
+
+/* Кнопка регистрации потемнее */
+.reg-btn:not(.active-nav) {
+    background: #e2e8f0;
+    color: #334155;
+}
+
+.reg-btn:not(.active-nav):hover {
+    background: #cbd5e1;
+}
+
+/* Кнопка войти - синяя */
+.active-nav {
+    background: #1e3a8a !important;
+    color: white !important;
+}
+
+.active-nav:hover {
+    background: #1d4ed8 !important;
+}
+
+.auth-title {
+    font-size: 52px;
+    color: #1e3a8a;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.auth-desc {
+    color: #334155;
+    line-height: 1.6;
+    font-size: 16px;
+}
+
+.auth-form-container {
+    position: relative;
+}
+
+.form-back {
+    background: none;
+    border: none;
+    color: #1e3a8a;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.form-title {
+    margin-bottom: 25px;
+    color: #0f172a;
+}
+
+.field-wrap {
+    margin-bottom: 15px;
+}
+
+.field-wrap input {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    outline: none;
+    font-size: 15px;
+}
+
+.radio-group {
+    display: flex;
+    gap: 30px;
+    margin: 20px 0;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.group-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.auth-submit-btn {
+    width: 100%;
+    padding: 16px;
+    background: #1e3a8a;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.forgot-text {
+    text-align: right;
+    margin-bottom: 20px;
+}
+
+.forgot-text a {
+    color: #64748b;
+    font-size: 13px;
+    text-decoration: none;
+}

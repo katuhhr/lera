@@ -1,0 +1,129 @@
+.admin-page-container {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+    padding: 20px 0;
+    background-color: #f8fbff;
+}
+
+.admin-sidebar {
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    border-right: none;
+}
+
+.avatar-placeholder {
+    width: 120px;
+    height: 120px;
+    border: 2px solid #1E3A8A;
+    border-radius: 50%;
+    margin-bottom: 20px;
+}
+
+.admin-profile-meta {
+    text-align: center;
+}
+
+.meta-name {
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.meta-role {
+    color: #666;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.admin-content-area {
+    flex: 1;
+    padding: 0 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.white-card {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+}
+
+.white-card .card-title {
+    font-size: 20px;
+    margin-bottom: 20px;
+    font-weight: 700;
+    color: #333;
+    margin-top: 0;
+}
+
+/* Стили таблицы */
+.admin-table-styled {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table-styled th {
+    text-align: left;
+    color: #1E3A8A;
+    border-bottom: 2px solid #1E3A8A;
+    padding: 10px 8px;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.admin-table-styled td {
+    padding: 15px 8px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+}
+
+.outline-btn {
+    padding: 6px 18px;
+    border-radius: 20px;
+    border: 1px solid #1E3A8A;
+    color: #1E3A8A;
+    background: white;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 12px;
+    margin-left: 8px;
+    transition: all 0.2s;
+}
+
+.outline-btn:hover {
+    background: #F0F4FF;
+}
+
+.btns-cell {
+    text-align: right;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.teachers-name-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.teacher-grid-item {
+    padding: 4px 0;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    color: #333;
+}
+
+.teacher-grid-item:hover {
+    color: #1E3A8A;
+    text-decoration: underline;
+}

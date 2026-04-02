@@ -1,0 +1,130 @@
+.self-study-layout {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.self-study-view {
+    width: 100%;
+    max-width: 1200px;
+}
+
+.self-study-card {
+    background: #FFFFFF;
+    border-radius: 30px;
+    padding: 40px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+    min-height: 550px;
+}
+
+.self-study-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 35px;
+}
+
+.self-study-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.self-study-header-btns {
+    display: flex;
+    gap: 12px;
+}
+
+.self-study-add-btn, .self-study-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    border: 1.5px solid #1E3A8A;
+}
+
+.self-study-add-btn {
+    background: #FFFFFF;
+    color: #1E3A8A;
+}
+
+.self-study-btn.save, .self-study-btn.back {
+    background-color: #1E3A8A;
+    color: #FFFFFF;
+}
+
+.self-study-btn.edit {
+    background-color: #FFFFFF;
+    color: #1E3A8A;
+}
+
+.self-study-btn.save:hover, .self-study-btn.back:hover {
+    background-color: #162d6b;
+}
+
+.self-study-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.self-study-pill {
+    background-color: #DBEAFE;
+    color: #111827;
+    padding: 20px 30px;
+    border-radius: 18px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: 0.2s;
+}
+
+.self-study-pill:hover {
+    background-color: #d1e4fd;
+}
+
+.self-study-delete {
+    background: none;
+    border: none;
+    color: #EF4444;
+    opacity: 0;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.self-study-pill:hover .self-study-delete {
+    opacity: 1;
+}
+
+.self-study-inline-input {
+    width: 100%;
+    background-color: #F3F4F6;
+    padding: 20px 30px;
+    border-radius: 18px;
+    font-size: 16px;
+    border: 2px solid #1E3A8A;
+    outline: none;
+}
+
+.self-study-editor-wrap {
+    width: 100%;
+}
+
+.self-study-textarea {
+    width: 100%;
+    min-height: 420px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    line-height: 1.6;
+    resize: none;
+    background: transparent;
+    color: #374151;
+}
