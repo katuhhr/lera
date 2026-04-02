@@ -3,10 +3,44 @@ from django.utils import timezone
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+<<<<<<< HEAD
+=======
+from rest_framework import serializers
+>>>>>>> 87dd4e194f5bcdb7cf0f440e13f6e51ad0596bf9
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from users.models import Group, User, Request
+
+
+class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
+    """Allow JWT login by email for frontend auth form."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Replace default username input with email for API contract.
+        self.fields.pop("username", None)
+        self.fields["email"] = serializers.EmailField(required=True, write_only=True)
+
+    def validate(self, attrs):
+        email = (attrs.get("email") or "").strip().lower()
+        password = attrs.get("password")
+        if not email or not password:
+            raise serializers.ValidationError({"detail": "Укажите email и пароль."})
+
+        user = User.objects.filter(email__iexact=email).first()
+        if not user:
+            raise serializers.ValidationError({"detail": "Пользователь с таким email не найден."})
+
+        # SimpleJWT authenticates through USERNAME_FIELD, so pass username explicitly.
+        token_data = super().validate({"username": user.username, "password": password})
+        token_data["role"] = user.role
+        token_data["email"] = user.email
+        return token_data
+
+
+class EmailTokenObtainPairView(TokenObtainPairView):
+    serializer_class = EmailTokenObtainPairSerializer
 
 
 @api_view(['POST'])

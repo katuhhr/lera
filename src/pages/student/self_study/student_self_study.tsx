@@ -1,7 +1,18 @@
+<<<<<<< HEAD
 import React, { useState, useEffect, useCallback } from 'react';
+=======
+import React, { useEffect, useMemo, useState } from 'react';
+>>>>>>> 87dd4e194f5bcdb7cf0f440e13f6e51ad0596bf9
 import { ArrowLeft, Folder } from 'lucide-react';
 import { apiUrl } from '../../../config';
 import './student_self_study.css';
+import { apiUrl } from '../../../config';
+
+type SelfStudyTopic = {
+    id: number;
+    title: string;
+    content: string;
+};
 
 interface SelfStudyRow {
     id: number;
@@ -10,6 +21,7 @@ interface SelfStudyRow {
 }
 
 const StudentSelfStudy: React.FC = () => {
+<<<<<<< HEAD
     const [topics, setTopics] = useState<SelfStudyRow[]>([]);
     const [selectedTopic, setSelectedTopic] = useState<SelfStudyRow | null>(null);
     const [loading, setLoading] = useState(true);
@@ -40,6 +52,44 @@ const StudentSelfStudy: React.FC = () => {
     useEffect(() => {
         void load();
     }, [load]);
+=======
+    const [topics, setTopics] = useState<SelfStudyTopic[]>([]);
+    const [selectedTopic, setSelectedTopic] = useState<SelfStudyTopic | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    const authHeaders = useMemo(() => {
+        const token = localStorage.getItem('access_token');
+        return {
+            Accept: 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        };
+    }, []);
+
+    useEffect(() => {
+        const load = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                const res = await fetch(apiUrl('/api/student/self-study/'), {
+                    headers: authHeaders,
+                });
+                const json = await res.json().catch(() => ({}));
+                if (!res.ok) {
+                    throw new Error((json as { message?: string }).message || 'Ошибка загрузки самоподготовки');
+                }
+                const payload = json as { data?: SelfStudyTopic[] };
+                setTopics(Array.isArray(payload.data) ? payload.data : []);
+            } catch (e) {
+                const msg = e instanceof Error ? e.message : 'Ошибка загрузки самоподготовки';
+                setError(msg);
+            } finally {
+                setLoading(false);
+            }
+        };
+        void load();
+    }, [authHeaders]);
+>>>>>>> 87dd4e194f5bcdb7cf0f440e13f6e51ad0596bf9
 
     if (selectedTopic) {
         return (
@@ -54,15 +104,33 @@ const StudentSelfStudy: React.FC = () => {
                         >
                             <ArrowLeft size={22} color="#111827" />
                         </button>
+<<<<<<< HEAD
                         <div className="topic-title-badge">{selectedTopic.title}</div>
+=======
+                        <div className="topic-title-badge">
+                            {selectedTopic.title}
+                        </div>
+>>>>>>> 87dd4e194f5bcdb7cf0f440e13f6e51ad0596bf9
                     </header>
 
                     <div className="topic-sheet-content">
+<<<<<<< HEAD
                         {selectedTopic.content ? (
                             <div className="material-text-content">{selectedTopic.content}</div>
                         ) : (
                             <p className="study-self-empty">Текст темы в базе не задан.</p>
                         )}
+=======
+                        {selectedTopic.content && (
+                            <div className="material-text-content">
+                                {selectedTopic.content}
+                            </div>
+                        )}
+                        {/* Если topicContent пустой, здесь просто белый фон листа */}
+                        {!selectedTopic.content && (
+                            <div className="material-text-content">Для этой темы пока нет описания.</div>
+                        )}
+>>>>>>> 87dd4e194f5bcdb7cf0f440e13f6e51ad0596bf9
                     </div>
                 </main>
             </div>
@@ -82,11 +150,22 @@ const StudentSelfStudy: React.FC = () => {
                 )}
 
                 <div className="study-topics-grid">
+<<<<<<< HEAD
                     {topics.map((topic) => (
                         <div
                             key={topic.id}
                             role="button"
                             tabIndex={0}
+=======
+                    {loading && <div className="study-topic-pill">Загрузка...</div>}
+                    {error && <div className="study-topic-pill">{error}</div>}
+                    {!loading && !error && topics.length === 0 && (
+                        <div className="study-topic-pill">Темы пока не добавлены.</div>
+                    )}
+                    {!loading && !error && topics.map((topic) => (
+                        <div
+                            key={topic.id}
+>>>>>>> 87dd4e194f5bcdb7cf0f440e13f6e51ad0596bf9
                             className="study-topic-pill"
                             onClick={() => setSelectedTopic(topic)}
                             onKeyDown={(e) => {

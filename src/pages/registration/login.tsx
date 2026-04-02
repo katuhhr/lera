@@ -73,7 +73,7 @@ const Login: React.FC = () => {
             const res = await fetch(apiUrl('/api/auth/token/'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-                body: JSON.stringify({ username: email, password }),
+                body: JSON.stringify({ email, password }),
             });
 
             const data = await res.json().catch(() => ({}));
