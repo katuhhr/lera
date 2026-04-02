@@ -1,0 +1,150 @@
+.schedule-page {
+    width: 100%;
+}
+
+.schedule-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.schedule-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1E3A8A;
+}
+
+.schedule-grid-layout {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+.schedule-day-card {
+    background: #FFFFFF;
+    border-radius: 25px;
+    padding: 25px;
+    min-height: 240px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+}
+
+.schedule-day-card.is-today {
+    background-color: #1E3A8A;
+}
+
+.day-card-header {
+    margin-bottom: 20px;
+}
+
+.day-date-badge {
+    background-color: #DBEAFE;
+    color: #1E3A8A;
+    padding: 8px 16px;
+    border-radius: 15px;
+    font-size: 13px;
+    font-weight: 700;
+    display: inline-block;
+}
+
+.is-today .day-date-badge {
+    background-color: #FFFFFF;
+}
+
+.day-lessons-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.lesson-entry-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+}
+
+.lesson-entry {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+}
+
+.lesson-input {
+    border: none;
+    background: transparent;
+    font-size: 15px;
+    color: #374151;
+    outline: none;
+}
+
+.is-today .lesson-input {
+    color: #FFFFFF;
+}
+
+.time-field {
+    width: 55px;
+    font-weight: 600;
+}
+
+.info-field {
+    flex: 1;
+}
+
+.remove-lesson-btn {
+    background: #dbeafe;
+    color: #80838c;
+    border: none;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.2s;
+    flex-shrink: 0;
+}
+
+.remove-lesson-btn:hover {
+    background: #bed5f4;
+    transform: scale(1.1);
+}
+
+.is-today .remove-lesson-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: #FFFFFF;
+}
+
+.is-today .remove-lesson-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.inner-add-btn {
+    margin-top: 10px;
+    width: 100%;
+    padding: 8px;
+    border: 1.5px dashed #D1D5DB;
+    background: none;
+    border-radius: 12px;
+    color: #9CA3AF;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.is-today .inner-add-btn {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.edit-pill-btn {
+    background: #FFFFFF;
+    border: 1.5px solid #1E3A8A;
+    color: #1E3A8A;
+    padding: 10px 25px;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+}
