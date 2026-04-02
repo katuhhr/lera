@@ -1,10 +1,49 @@
 from rest_framework import serializers
+<<<<<<< HEAD
+from users.models import (
+    User, Theme, Theory, Material, Test, Question, AnswerOption, SelfStudyTheme, Task, Attendance,
+)
+
+
+class MaterialNodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Material
+        fields = ['id', 'title', 'type', 'url', 'description', 'created_at']
+
+
+class ThemeWithMaterialsSerializer(serializers.ModelSerializer):
+    materials = MaterialNodeSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Theme
+        fields = ['id', 'name', 'materials']
+
+
+class TheoryLearningTreeSerializer(serializers.ModelSerializer):
+    themes = ThemeWithMaterialsSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Theory
+        fields = ['id', 'name', 'themes']
+
+
+class ThemeCatalogSerializer(serializers.ModelSerializer):
+    """Тема с материалами для каталога «специальность + курс»."""
+    materials = MaterialNodeSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Theme
+        fields = ['id', 'name', 'materials', 'major_id', 'course_id']
+=======
 from django.db import connection
 from django.db.utils import ProgrammingError
 from users.models import User, Theme, Theory, Test, Question, AnswerOption, SelfStudyTheme, Task, Attendance
+>>>>>>> 87dd4e194f5bcdb7cf0f440e13f6e51ad0596bf9
 
 
 class StudentProfileSerializer(serializers.ModelSerializer):
+    firstname = serializers.CharField(source='first_name', read_only=True)
+    lastname = serializers.CharField(source='last_name', read_only=True)
     group_name = serializers.CharField(source='group.name', read_only=True)
     full_name = serializers.SerializerMethodField()
     
@@ -13,7 +52,7 @@ class StudentProfileSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'firstname', 'lastname', 'full_name', 'email', 'role', 'group', 'group_name']
     
     def get_full_name(self, obj):
-        return f"{obj.firstname} {obj.lastname}"
+        return f"{obj.first_name} {obj.last_name}"
 
 
 class ThemeListSerializer(serializers.ModelSerializer):
@@ -136,6 +175,17 @@ class SelfStudySerializer(serializers.ModelSerializer):
     
     class Meta:
         model = SelfStudyTheme
+        fields = ['id', 'title', 'content']
+
+
+class ThemeCommonSelfStudySerializer(serializers.ModelSerializer):
+    """Общие темы: запись `theme` без специальности и курса; текст из `theory`."""
+
+    title = serializers.CharField(source='name')
+    content = serializers.CharField(source='theory.text', allow_blank=True, read_only=True)
+
+    class Meta:
+        model = Theme
         fields = ['id', 'title', 'content']
 
 
