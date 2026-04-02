@@ -1,0 +1,73 @@
+.student-profile-view {
+    display: flex;
+    justify-content: center;
+    padding-top: 20px;
+}
+
+.profile-white-card.compact {
+    background: #FFFFFF;
+    border-radius: 30px;
+    padding: 50px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+    max-width: 500px;
+    width: 100%;
+}
+
+.profile-main-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.info-rows {
+    width: 100%;
+    margin: 30px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.info-block {
+    text-align: center;
+}
+
+.label {
+    font-size: 13px;
+    color: #9CA3AF;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.display-name {
+    font-size: 22px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.display-group, .display-role {
+    font-size: 18px;
+    color: #4B5563;
+    font-weight: 500;
+}
+
+.logout-btn {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 30px;
+    background: #FEF2F2;
+    color: #EF4444;
+    border: 1px solid #FEE2E2;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.logout-btn:hover {
+    background: #FEE2E2;
+    transform: translateY(-2px);
+}

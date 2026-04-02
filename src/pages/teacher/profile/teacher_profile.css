@@ -1,0 +1,168 @@
+.teacher-profile-view {
+    display: flex;
+    justify-content: center;
+    padding-top: 20px;
+}
+
+.profile-white-card {
+    background: #FFFFFF;
+    border-radius: 30px;
+    padding: 50px;
+    display: flex;
+    gap: 60px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+    width: 100%;
+    min-height: 450px;
+}
+
+.profile-left-side {
+    width: 240px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-right: 1px solid #F3F4F6;
+    padding-right: 40px;
+}
+
+.avatar-placeholder {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    border: 1.5px solid #1E3A8A;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.teacher-meta {
+    text-align: center;
+    margin-bottom: 25px;
+    width: 100%;
+}
+
+.display-name {
+    font-size: 20px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.display-role {
+    font-size: 15px;
+    color: #6B7280;
+    margin-top: 4px;
+}
+
+.name-edit-field {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #1E3A8A;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 18px;
+    outline: none;
+}
+
+/* Контейнер для кнопок в левой части */
+.profile-actions-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    margin-top: auto;
+}
+
+.profile-toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s;
+    border: 1.5px solid #1E3A8A;
+    font-size: 14px;
+}
+
+.mode-edit { background: #FFFFFF; color: #1E3A8A; }
+.mode-save { background: #1E3A8A; color: #FFFFFF; }
+
+.teacher-logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    color: #EF4444;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+    padding: 5px;
+}
+
+.teacher-logout-btn:hover { opacity: 0.7; }
+
+.profile-right-side { flex: 1; }
+
+.requests-table-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 25px;
+}
+
+.requests-ui-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.requests-ui-table th {
+    text-align: left;
+    padding-bottom: 15px;
+    color: #1E3A8A;
+    font-size: 14px;
+    border-bottom: 2px solid #1E3A8A;
+}
+
+.requests-ui-table th.th-center { text-align: center; }
+
+.requests-ui-table td {
+    padding: 18px 0;
+    border-bottom: 1px solid #F3F4F6;
+    font-size: 15px;
+}
+
+.empty-requests {
+    text-align: center;
+    padding: 40px 0;
+    color: #9CA3AF;
+}
+
+.cell-muted { color: #6B7280; }
+.cell-fio { font-weight: 500; color: #111827; }
+
+.request-actions-wrap {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.req-btn-outline {
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid #1E3A8A;
+    background: #FFFFFF;
+    color: #1E3A8A;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.req-btn-outline.grey { border-color: #D1D5DB; color: #6B7280; }
+.req-btn-outline:hover { background: #F8FAFF; }

@@ -1,0 +1,233 @@
+.grades-page-layout {
+    display: flex;
+    gap: 30px;
+}
+
+.grades-nav-sidebar {
+    width: 260px;
+    background: #FFFFFF;
+    border-radius: 20px;
+    padding: 20px 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.nav-spec-item, .nav-spec-static {
+    padding: 12px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #111827;
+    border-radius: 25px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.nav-spec-item.is-active {
+    background-color: #1E3A8A;
+    color: #FFFFFF;
+}
+
+.nav-course-sub {
+    margin-left: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.nav-course-item {
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #4B5563;
+    border-radius: 15px;
+    cursor: pointer;
+}
+
+.nav-course-item.is-active {
+    background-color: #DBEAFE;
+    color: #1E3A8A;
+    font-weight: 600;
+}
+
+.nav-groups-sub {
+    margin-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 8px;
+}
+
+.nav-group-link {
+    padding: 6px 15px;
+    font-size: 13px;
+    color: #6B7280;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+.nav-group-link.selected {
+    color: #1E3A8A;
+    font-weight: 700;
+    background: #EFF6FF;
+}
+
+.grades-content-view {
+    flex: 1;
+    overflow: hidden;
+}
+
+.grades-white-sheet {
+    background: #FFFFFF;
+    border-radius: 30px;
+    padding: 40px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+    min-height: 550px;
+}
+
+.grades-view-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 35px;
+}
+
+.grades-view-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.grades-header-btns {
+    display: flex;
+    gap: 12px;
+}
+
+.grades-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    border: 1.5px solid #1E3A8A;
+}
+
+.grades-action-btn.edit {
+    background: #FFFFFF;
+    color: #1E3A8A;
+}
+
+.grades-action-btn.save-blue {
+    background: #1E3A8A;
+    color: #FFFFFF;
+}
+
+.grades-action-btn.add {
+    background: #FFFFFF;
+    color: #1E3A8A;
+    border-color: #E5E7EB;
+}
+
+.table-container-styled {
+    border: 1.5px solid #1E3A8A;
+    border-radius: 15px;
+    overflow-x: auto;
+    background: #FFFFFF;
+}
+
+.table-container-styled::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-container-styled::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.table-container-styled::-webkit-scrollbar-thumb {
+    background: #DBEAFE;
+    border-radius: 10px;
+    border: 1px solid #1E3A8A;
+}
+
+.custom-vedomost-table {
+    width: max-content;
+    min-width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.custom-vedomost-table th,
+.custom-vedomost-table td {
+    border-right: 1.5px solid #1E3A8A;
+    border-bottom: 1.5px solid #1E3A8A;
+    height: 55px;
+    text-align: center;
+    width: 130px;
+    min-width: 130px;
+}
+
+.th-fio, .td-student-name {
+    width: 250px !important;
+    min-width: 250px !important;
+    position: sticky;
+    left: 0;
+    background: #FFFFFF;
+    z-index: 10;
+    /* Имитация правой границы, которая не исчезает при скролле */
+    box-shadow: inset -1.5px 0 0 0 #1E3A8A;
+    border-right: none;
+}
+
+.th-fio {
+    z-index: 11;
+    color: #1E3A8A;
+    font-weight: 600;
+}
+
+.td-student-name {
+    text-align: left;
+    padding-left: 20px;
+    color: #1E3A8A;
+}
+
+.header-edit-input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: transparent;
+    text-align: center;
+    color: #1E3A8A;
+    font-weight: 600;
+    font-size: 15px;
+    outline: none;
+}
+
+.cell-grade-input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: transparent;
+    text-align: center;
+    color: #1E3A8A;
+    font-size: 18px;
+    outline: none;
+}
+
+.custom-vedomost-table tr:last-child td {
+    border-bottom: none;
+}
+
+.custom-vedomost-table td:last-child,
+.custom-vedomost-table th:last-child {
+    border-right: none;
+}
+
+input:disabled {
+    cursor: default;
+}
