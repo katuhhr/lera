@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from django.db import connection
+from django.db.utils import ProgrammingError
 from users.models import User, Theme, Theory, Test, Question, AnswerOption, SelfStudyTheme, Task, Attendance
 
 
@@ -8,7 +10,7 @@ class StudentProfileSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ['id', 'username', 'firstname', 'lastname', 'full_name', 'email', 'group', 'group_name']
+        fields = ['id', 'username', 'firstname', 'lastname', 'full_name', 'email', 'role', 'group', 'group_name']
     
     def get_full_name(self, obj):
         return f"{obj.firstname} {obj.lastname}"
@@ -22,10 +24,12 @@ class ThemeListSerializer(serializers.ModelSerializer):
 
 class ThemeDetailSerializer(serializers.ModelSerializer):
     theory = serializers.SerializerMethodField()
+    links = serializers.SerializerMethodField()
+    tasks = serializers.SerializerMethodField()
     
     class Meta:
         model = Theme
-        fields = ['id', 'name', 'theory']
+        fields = ['id', 'name', 'theory', 'links', 'tasks']
     
     def get_theory(self, obj):
         if obj.theory:
@@ -35,6 +39,41 @@ class ThemeDetailSerializer(serializers.ModelSerializer):
                 'content': obj.theory.text
             }
         return None
+
+    def get_links(self, obj):
+        if not obj.theory_id:
+            return []
+        try:
+            # In some DB snapshots there is no file/theory_to_file table yet.
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT f.id, f.name, f.storage_url, f.type
+                    FROM theory_to_file tf
+                    JOIN file f ON f.id = tf.file_id
+                    WHERE tf.theory_id = %s
+                    ORDER BY f.id
+                    """,
+                    [obj.theory_id],
+                )
+                rows = cursor.fetchall()
+            return [
+                {'id': row[0], 'title': row[1], 'url': row[2], 'type': row[3]}
+                for row in rows
+            ]
+        except ProgrammingError:
+            return []
+
+    def get_tasks(self, obj):
+        tasks = Task.objects.filter(theme=obj).order_by('deadline_date')
+        return [
+            {
+                'id': t.id,
+                'text': t.text,
+                'deadline': t.deadline_date,
+            }
+            for t in tasks
+        ]
 
 
 class QuestionSerializer(serializers.ModelSerializer):

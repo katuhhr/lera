@@ -1,17 +1,67 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { User, LogOut } from 'lucide-react';
 import './student_profile.css';
+import { apiUrl } from '../../../config';
+
+type StudentProfileData = {
+    id: number;
+    firstname: string;
+    lastname: string;
+    full_name: string;
+    email: string;
+    role: string;
+    group_name: string | null;
+};
 
 const StudentProfile: React.FC = () => {
-    const studentData = {
-        name: 'Иванов Иван Иванович',
-        group: 'ИСП-401',
-        role: 'Студент'
-    };
+    const navigate = useNavigate();
+    const [studentData, setStudentData] = useState<StudentProfileData | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    const authHeaders = useMemo(() => {
+        const token = localStorage.getItem('access_token');
+        return {
+            Accept: 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        };
+    }, []);
+
+    useEffect(() => {
+        const load = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                const res = await fetch(apiUrl('/api/student/profile/'), { headers: authHeaders });
+                const json = await res.json().catch(() => ({}));
+                if (!res.ok) {
+                    throw new Error((json as { message?: string }).message || 'Ошибка загрузки профиля');
+                }
+                const data = (json as { data?: StudentProfileData }).data;
+                if (!data) {
+                    throw new Error('Профиль не найден');
+                }
+                setStudentData(data);
+            } catch (e) {
+                const msg = e instanceof Error ? e.message : 'Ошибка загрузки профиля';
+                setError(msg);
+            } finally {
+                setLoading(false);
+            }
+        };
+        void load();
+    }, [authHeaders]);
 
     const handleLogout = () => {
-        console.log("Выход из системы...");
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        navigate('/');
     };
+
+    const profileName = studentData?.full_name || [studentData?.firstname, studentData?.lastname].filter(Boolean).join(' ') || '—';
+    const profileGroup = studentData?.group_name || 'Группа не указана';
+    const profileRole = studentData?.role === 'student' ? 'Студент' : (studentData?.role || '—');
 
     return (
         <div className="student-profile-view">
@@ -24,18 +74,23 @@ const StudentProfile: React.FC = () => {
                     <div className="info-rows">
                         <div className="info-block">
                             <span className="label">ФИО</span>
-                            <h2 className="display-name">{studentData.name}</h2>
+                            <h2 className="display-name">{loading ? 'Загрузка...' : profileName}</h2>
                         </div>
 
                         <div className="info-block">
                             <span className="label">Группа</span>
-                            <p className="display-group">{studentData.group}</p>
+                            <p className="display-group">{loading ? 'Загрузка...' : profileGroup}</p>
                         </div>
 
                         <div className="info-block">
                             <span className="label">Роль</span>
-                            <p className="display-role">{studentData.role}</p>
+                            <p className="display-role">{loading ? 'Загрузка...' : profileRole}</p>
                         </div>
+                        {!loading && error && (
+                            <div className="info-block">
+                                <p className="display-role">{error}</p>
+                            </div>
+                        )}
                     </div>
 
                     <button className="logout-btn" onClick={handleLogout}>

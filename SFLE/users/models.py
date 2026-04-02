@@ -4,6 +4,11 @@ from django.db import models
 from django.utils import timezone
 
 class User(AbstractUser):
+    # In DB schema we store firstname/lastname fields, not first_name/last_name.
+    # Disable inherited fields from AbstractUser to avoid querying missing columns.
+    first_name = None
+    last_name = None
+
     ROLE_CHOICES = [
         ('student', 'Студент'),
         ('teacher', 'Преподаватель'),
@@ -284,6 +289,7 @@ class TestResult(models.Model):
     completed_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата прохождения')
     
     class Meta:
+        db_table = 'test_result'
         unique_together = ['student', 'test']
 
 
