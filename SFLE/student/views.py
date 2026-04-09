@@ -1,10 +1,11 @@
-from django.db import DatabaseError, OperationalError, ProgrammingError
+from django.db import DatabaseError
 from django.db.models import Prefetch, Q
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from users.gradebook_schedule import gradebook_column_headers_from_schedule
 from users.models import (
     User,
     Theme,
@@ -16,18 +17,28 @@ from users.models import (
     Task,
     Attendance,
     TestResult,
-    SelfStudyTheme,
     GradebookSheet,
 )
+from .self_study_utils import build_self_study_items
 from .serializers import (
     StudentProfileSerializer, ThemeListSerializer, ThemeDetailSerializer,
     TestSerializer, AttendanceSerializer, DashboardSerializer,
     TheoryLearningTreeSerializer, ThemeCatalogSerializer,
-    ThemeCommonSelfStudySerializer,
 )
 
 
 _DEFAULT_GRADEBOOK_COLUMNS = ('Урок №1', 'Диалог', 'Урок №2', '', '')
+
+
+def _student_progress_display_name(student: User) -> str:
+    """Фамилия и имя для экрана успеваемости."""
+    ln = (student.last_name or '').strip()
+    fn = (student.first_name or '').strip()
+    if ln and fn:
+        return f'{ln} {fn}'
+    if ln or fn:
+        return ln or fn
+    return (student.username or student.email or '').strip()
 
 
 def _gradebook_row_for_student(student: User) -> dict | None:
@@ -41,6 +52,7 @@ def _gradebook_row_for_student(student: User) -> dict | None:
     except DatabaseError:
         return {
             'group_name': group_name,
+            'student_name': _student_progress_display_name(student),
             'column_titles': [],
             'values': [],
         }
@@ -48,6 +60,7 @@ def _gradebook_row_for_student(student: User) -> dict | None:
     if not sheet:
         return {
             'group_name': group_name,
+            'student_name': _student_progress_display_name(student),
             'column_titles': [],
             'values': [],
         }
@@ -57,6 +70,10 @@ def _gradebook_row_for_student(student: User) -> dict | None:
         column_titles = [str(x) if x is not None else '' for x in ct]
     else:
         column_titles = list(_DEFAULT_GRADEBOOK_COLUMNS)
+
+    column_titles = gradebook_column_headers_from_schedule(
+        group, len(column_titles), column_titles,
+    )
 
     raw_cells = sheet.cells
     cells_map: dict = {}
@@ -75,6 +92,7 @@ def _gradebook_row_for_student(student: User) -> dict | None:
 
     return {
         'group_name': group_name,
+        'student_name': _student_progress_display_name(student),
         'column_titles': column_titles,
         'values': vals,
     }
@@ -235,9 +253,9 @@ def get_themes(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_theme_detail(request, theme_id):
-    """Получить детали темы: теория, ссылки на задания и тест"""
-    student = _get_current_student(request)
-    if not student:
+    """Детали темы: теория (theme.theory_id), файлы к теории, задания (task.theme_id), материалы (material.theme_id)."""
+    student = User.objects.filter(pk=request.user.pk).first()
+    if not student or (getattr(student, 'role', None) or '').lower() != 'student':
         return Response({'status': 'error', 'message': 'Студент не найден'}, status=404)
     allowed_theme_ids = set(_theme_ids_for_student(student))
     if theme_id not in allowed_theme_ids:
@@ -249,7 +267,14 @@ def get_theme_detail(request, theme_id):
             status=403,
         )
 
-    theme = get_object_or_404(Theme, id=theme_id)
+    theme = (
+        Theme.objects.select_related('theory', 'major', 'course')
+        .prefetch_related(Prefetch('materials', queryset=Material.objects.order_by('id')))
+        .filter(pk=theme_id)
+        .first()
+    )
+    if theme is None:
+        return Response({'status': 'error'}, status=404)
     serializer = ThemeDetailSerializer(theme)
     
     #ссылки(навигация)
@@ -424,6 +449,7 @@ def get_progress(request):
             'attendance': attendance_data,
             'test_results': test_data,
             'tasks': tasks_data,
+            'student_display_name': _student_progress_display_name(student),
             'gradebook': gradebook,
         }
     })
@@ -516,37 +542,4 @@ def get_self_study(request):
             status=403,
         )
 
-    items: list[dict] = []
-    theory_ids: set[int] = set()
-
-    for sst in SelfStudyTheme.objects.select_related('theory').order_by('id'):
-        th = sst.theory
-        theory_ids.add(th.id)
-        items.append(
-            {
-                'id': sst.id,
-                'kind': 'self_study',
-                'title': th.name,
-                'content': th.text or '',
-            }
-        )
-
-    for theme in (
-        Theme.objects.filter(major_id__isnull=True, course_id__isnull=True)
-        .select_related('theory')
-        .order_by('id')
-    ):
-        if not theme.theory_id or theme.theory_id in theory_ids:
-            continue
-        th = theme.theory
-        theory_ids.add(th.id)
-        items.append(
-            {
-                'id': theme.id,
-                'kind': 'common_theme',
-                'title': theme.name,
-                'content': (th.text or '') if th else '',
-            }
-        )
-
-    return Response({'status': 'success', 'data': items})
+    return Response({'status': 'success', 'data': build_self_study_items()})

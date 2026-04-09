@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from django.db import connection
 from django.db.utils import ProgrammingError
 from users.models import (
     User, Theme, Theory, Material, Test, Question, AnswerOption, SelfStudyTheme, Task, Attendance,
@@ -125,13 +124,15 @@ class ThemeListSerializer(serializers.ModelSerializer):
 
 
 class ThemeDetailSerializer(serializers.ModelSerializer):
+    """Связи: theme.theory_id, theme.major_id/course_id, task.theme_id, material.theme_id (ссылки к теме — в material)."""
+
     theory = serializers.SerializerMethodField()
-    links = serializers.SerializerMethodField()
     tasks = serializers.SerializerMethodField()
-    
+    materials = serializers.SerializerMethodField()
+
     class Meta:
         model = Theme
-        fields = ['id', 'name', 'theory', 'links', 'tasks']
+        fields = ['id', 'name', 'major_id', 'course_id', 'theory', 'tasks', 'materials']
     
     def get_theory(self, obj):
         if obj.theory:
@@ -141,30 +142,6 @@ class ThemeDetailSerializer(serializers.ModelSerializer):
                 'content': obj.theory.text
             }
         return None
-
-    def get_links(self, obj):
-        if not obj.theory_id:
-            return []
-        try:
-            # In some DB snapshots there is no file/theory_to_file table yet.
-            with connection.cursor() as cursor:
-                cursor.execute(
-                    """
-                    SELECT f.id, f.name, f.storage_url, f.type
-                    FROM theory_to_file tf
-                    JOIN file f ON f.id = tf.file_id
-                    WHERE tf.theory_id = %s
-                    ORDER BY f.id
-                    """,
-                    [obj.theory_id],
-                )
-                rows = cursor.fetchall()
-            return [
-                {'id': row[0], 'title': row[1], 'url': row[2], 'type': row[3]}
-                for row in rows
-            ]
-        except ProgrammingError:
-            return []
 
     def get_tasks(self, obj):
         tasks = Task.objects.filter(theme=obj).order_by('deadline_date')
@@ -176,6 +153,14 @@ class ThemeDetailSerializer(serializers.ModelSerializer):
             }
             for t in tasks
         ]
+
+    def get_materials(self, obj):
+        """Строки таблицы material с material.theme_id = тема."""
+        try:
+            qs = Material.objects.filter(theme_id=obj.pk).order_by('id')
+            return MaterialNodeSerializer(qs, many=True).data
+        except ProgrammingError:
+            return []
 
 
 class QuestionSerializer(serializers.ModelSerializer):

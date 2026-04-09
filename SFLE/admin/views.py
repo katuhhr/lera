@@ -7,7 +7,8 @@ from django.db.models import Prefetch, Min, Q
 from django.db.utils import DatabaseError
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from django.utils.dateparse import parse_date
+from django.utils.dateparse import parse_date, parse_datetime
+from users.gradebook_schedule import gradebook_column_headers_from_schedule
 from users.models import (
     User,
     Group,
@@ -20,13 +21,14 @@ from users.models import (
     Course,
     GradebookSheet,
     UserTeachingGroup,
+    Task,
 )
 from users.major_labels import majors_for_learning_catalog, major_theory_bundle_label
+from student.self_study_utils import build_self_study_items
 from student.serializers import (
     TheoryLearningTreeSerializer,
     MaterialNodeSerializer,
     ThemeCatalogSerializer,
-    ThemeCommonSelfStudySerializer,
 )
 from .serializers import (
     ApplicationSerializer, TeacherSerializer, GroupSerializer,
@@ -651,7 +653,7 @@ def teacher_schedule_week(request):
 
 
 def _teacher_only(user):
-    return getattr(user, 'role', None) == 'teacher'
+    return _is_teacher_role(user)
 
 
 def _learning_tree_queryset():
@@ -835,23 +837,69 @@ def learning_theme_create(request):
     )
 
 
-@api_view(['PATCH', 'DELETE'])
+def _learning_theme_detail_queryset():
+    return Theme.objects.select_related('theory').prefetch_related(
+        Prefetch('materials', queryset=Material.objects.order_by('id')),
+    )
+
+
+@api_view(['GET', 'PATCH', 'DELETE'])
 @permission_classes([IsAuthenticated])
 def learning_theme_detail(request, pk: int):
     if not _teacher_only(request.user):
         return Response({'detail': 'Только для преподавателя'}, status=403)
-    theme = get_object_or_404(Theme, pk=pk)
+    theme = get_object_or_404(_learning_theme_detail_queryset(), pk=pk)
     if theme.major_id and theme.course_id:
         if not _teacher_can_access_major_course(request.user, theme.major_id, theme.course_id):
             return Response({'detail': 'Нет доступа к этой теме'}, status=403)
+
+    if request.method == 'GET':
+        theory = theme.theory
+        tasks = Task.objects.filter(theme=theme).order_by('deadline_date', 'id')
+        return Response({
+            'status': 'success',
+            'data': {
+                'id': theme.id,
+                'name': theme.name,
+                'major_id': theme.major_id,
+                'course_id': theme.course_id,
+                'theory': {
+                    'id': theory.id,
+                    'name': theory.name,
+                    'text': theory.text or '',
+                },
+                'materials': MaterialNodeSerializer(theme.materials.all(), many=True).data,
+                'tasks': [
+                    {
+                        'id': t.id,
+                        'text': t.text,
+                        'deadline': t.deadline_date.isoformat() if t.deadline_date else None,
+                    }
+                    for t in tasks
+                ],
+            },
+        })
+
     if request.method == 'DELETE':
         theme.delete()
         return Response({'status': 'success', 'message': 'Тема удалена'})
+
     name = request.data.get('name')
     if name is not None:
         n = str(name).strip()
         if n:
             theme.name = n
+
+    if 'theory_title' in request.data or 'theory_text' in request.data:
+        th = theme.theory
+        if 'theory_title' in request.data:
+            tt = str(request.data.get('theory_title') or '').strip()
+            if tt:
+                th.name = tt[:200]
+        if 'theory_text' in request.data:
+            th.text = str(request.data.get('theory_text') or '')
+        th.save()
+
     theme.save()
     return Response({'status': 'success', 'data': {'id': theme.id, 'name': theme.name}})
 
@@ -912,21 +960,88 @@ def learning_material_detail(request, pk: int):
     return Response({'status': 'success', 'data': MaterialNodeSerializer(mat).data})
 
 
+def _parse_task_deadline(raw):
+    if raw is None or raw == '':
+        return None
+    if isinstance(raw, dt):
+        d = raw
+    else:
+        d = parse_datetime(str(raw))
+        if d is None:
+            return None
+    if timezone.is_naive(d):
+        d = timezone.make_aware(d, timezone.get_current_timezone())
+    return d
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def learning_task_create(request):
+    if not _teacher_only(request.user):
+        return Response({'detail': 'Только для преподавателя'}, status=403)
+    theme_id = request.data.get('theme_id')
+    text = (request.data.get('text') or '').strip()
+    if not theme_id:
+        return Response({'detail': 'Нужен theme_id'}, status=400)
+    if not text:
+        return Response({'detail': 'Укажите текст задания'}, status=400)
+    theme = get_object_or_404(Theme, pk=theme_id)
+    if theme.major_id and theme.course_id:
+        if not _teacher_can_access_major_course(request.user, theme.major_id, theme.course_id):
+            return Response({'detail': 'Нет доступа к этой теме'}, status=403)
+    deadline = _parse_task_deadline(request.data.get('deadline'))
+    if deadline is None:
+        return Response({'detail': 'Укажите дедлайн (дата и время, ISO или локальная строка)'}, status=400)
+    task = Task.objects.create(theme=theme, text=text, deadline_date=deadline)
+    return Response({
+        'status': 'success',
+        'data': {
+            'id': task.id,
+            'text': task.text,
+            'deadline': task.deadline_date.isoformat(),
+        },
+    }, status=201)
+
+
+@api_view(['PATCH', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def learning_task_detail(request, pk: int):
+    if not _teacher_only(request.user):
+        return Response({'detail': 'Только для преподавателя'}, status=403)
+    task = get_object_or_404(Task.objects.select_related('theme'), pk=pk)
+    th = task.theme
+    if th.major_id and th.course_id:
+        if not _teacher_can_access_major_course(request.user, th.major_id, th.course_id):
+            return Response({'detail': 'Нет доступа к этому заданию'}, status=403)
+    if request.method == 'DELETE':
+        task.delete()
+        return Response({'status': 'success', 'message': 'Задание удалено'})
+    if 'text' in request.data:
+        t = str(request.data.get('text') or '').strip()
+        if t:
+            task.text = t
+    if 'deadline' in request.data:
+        d = _parse_task_deadline(request.data.get('deadline'))
+        if d is not None:
+            task.deadline_date = d
+    task.save()
+    return Response({
+        'status': 'success',
+        'data': {
+            'id': task.id,
+            'text': task.text,
+            'deadline': task.deadline_date.isoformat(),
+        },
+    })
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def teacher_self_study(request):
-    """Общие темы самоподготовки: `theme` без major/course, текст в `theory`. Только просмотр."""
+    """Самоподготовка: те же темы, что у студента (теория, материалы, задания). Только просмотр."""
     if not _teacher_only(request.user):
         return Response({'detail': 'Только для преподавателя'}, status=403)
-    qs = (
-        Theme.objects.filter(major__isnull=True, course__isnull=True)
-        .select_related('theory')
-        .order_by('id')
-    )
-    return Response({
-        'status': 'success',
-        'data': ThemeCommonSelfStudySerializer(qs, many=True).data,
-    })
+    return Response({'status': 'success', 'data': build_self_study_items()})
 
 
 DEFAULT_VEDOMOST_COLUMNS = ['Урок №1', 'Диалог', 'Урок №2', '', '']
@@ -1033,6 +1148,9 @@ def gradebook_sheet(request):
         )
         sheet = _safe_gradebook_row(group)
         column_titles = _normalize_gradebook_columns(sheet)
+        column_titles = gradebook_column_headers_from_schedule(
+            group, len(column_titles), column_titles,
+        )
         raw_cells = _normalize_gradebook_cells(sheet)
         student_rows = []
         for u in students:

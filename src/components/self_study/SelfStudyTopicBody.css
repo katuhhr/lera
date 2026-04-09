@@ -1,0 +1,5 @@
+.self-study-topic-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}

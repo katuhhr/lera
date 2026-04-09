@@ -53,6 +53,13 @@
     line-height: 1.45;
 }
 
+.grades-error {
+    color: #b91c1c;
+    font-size: 15px;
+    margin: 0 0 12px;
+    line-height: 1.45;
+}
+
 .grades-group-label {
     font-size: 14px;
     color: #4b5563;
@@ -101,18 +108,6 @@
     font-weight: 500;
 }
 
-.date-cell {
-    font-weight: 500;
-    color: #111827;
-}
-
 .grades-table td:empty {
     background-color: transparent;
-}
-
-.sticky-col {
-    position: sticky;
-    left: 0;
-    background: white;
-    z-index: 1;
 }

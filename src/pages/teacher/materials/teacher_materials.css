@@ -344,13 +344,14 @@
 
 .topic-editor {
     width: 100%;
-    min-height: 400px;
+    min-height: unset;
     border: none;
     outline: none;
     font-size: 16px;
     line-height: 1.6;
-    resize: none;
+    resize: vertical;
     background: transparent;
+    box-sizing: border-box;
 }
 
 .nav-icon-danger {
@@ -466,6 +467,16 @@
     color: #b91c1c;
 }
 
+.materials-detail-error {
+    margin: 12px 0 0;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: #fef2f2;
+    color: #b91c1c;
+    font-size: 14px;
+    line-height: 1.45;
+}
+
 .material-type-tag {
     font-size: 12px;
     color: #64748b;
@@ -504,4 +515,68 @@
 .materials-placeholder {
     color: #64748b;
     font-size: 15px;
+}
+
+.teacher-theme-theory-block {
+    margin-top: 8px;
+}
+
+.teacher-theory-textarea {
+    min-height: 160px;
+}
+
+.teacher-theory-save {
+    align-self: flex-start;
+    margin-top: 8px;
+}
+
+.materials-inline-heading {
+    margin: 0;
+    align-self: center;
+}
+
+.teacher-materials-inline-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 12px;
+}
+
+.teacher-material-inline-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 16px 18px;
+    background: #fafbfc;
+}
+
+.teacher-material-inline-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 4px;
+}
+
+/* Компактное описание материала: ограничение высоты и прокрутка при длинном тексте */
+.teacher-material-description {
+    max-height: 10rem;
+    overflow-y: auto;
+}
+
+.teacher-new-task-form {
+    margin-top: 8px;
+    margin-bottom: 16px;
+}
+
+.teacher-tasks-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.teacher-task-row-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
 }

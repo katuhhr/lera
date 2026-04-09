@@ -23,6 +23,28 @@ interface ThemeRow {
     is_common?: boolean;
 }
 
+interface TheoryBlock {
+    id: number;
+    title: string;
+    content: string;
+}
+
+interface ThemeTask {
+    id: number;
+    text: string;
+    deadline: string;
+}
+
+interface ThemeDetailPayload {
+    id: number;
+    name: string;
+    major_id?: number | null;
+    course_id?: number | null;
+    theory: TheoryBlock | null;
+    tasks: ThemeTask[];
+    materials?: MaterialRow[];
+}
+
 function formatApiError(payload: unknown, fallback: string): string {
     const p = payload as { detail?: unknown; message?: string };
     if (typeof p.message === 'string' && p.message) {
@@ -51,6 +73,9 @@ const StudentMaterials: React.FC = () => {
     const [themeListOpen, setThemeListOpen] = useState(true);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [themeDetail, setThemeDetail] = useState<ThemeDetailPayload | null>(null);
+    const [detailLoading, setDetailLoading] = useState(false);
+    const [detailError, setDetailError] = useState<string | null>(null);
 
     const load = useCallback(async () => {
         if (!localStorage.getItem('access_token') && !localStorage.getItem('refresh_token')) {
@@ -88,8 +113,79 @@ const StudentMaterials: React.FC = () => {
         void load();
     }, [load]);
 
+    useEffect(() => {
+        if (!selectedThemeId || loading || error) {
+            setThemeDetail(null);
+            setDetailError(null);
+            setDetailLoading(false);
+            return;
+        }
+        let cancelled = false;
+        (async () => {
+            setThemeDetail(null);
+            setDetailLoading(true);
+            setDetailError(null);
+            try {
+                const res = await authFetch(`/api/student/themes/${selectedThemeId}/`);
+                const json = await res.json().catch(() => ({}));
+                if (cancelled) return;
+                if (res.status === 404) {
+                    const st = themes.find((t) => t.id === selectedThemeId);
+                    setThemeDetail({
+                        id: selectedThemeId,
+                        name: st?.name ?? 'Тема',
+                        theory: null,
+                        tasks: [],
+                    });
+                    setDetailError(null);
+                    return;
+                }
+                if (!res.ok) {
+                    setThemeDetail(null);
+                    setDetailError(formatApiError(json, 'Не удалось загрузить содержимое темы'));
+                    return;
+                }
+                const data = (json as { data?: ThemeDetailPayload }).data;
+                setThemeDetail(data ?? null);
+            } catch {
+                if (!cancelled) {
+                    setThemeDetail(null);
+                    setDetailError('Нет связи с сервером.');
+                }
+            } finally {
+                if (!cancelled) setDetailLoading(false);
+            }
+        })();
+        return () => {
+            cancelled = true;
+        };
+    }, [selectedThemeId, loading, error, themes]);
+
     const selectedTheme = themes.find((t) => t.id === selectedThemeId) ?? null;
-    const materials = selectedTheme?.materials ?? [];
+    const catalogMaterials = selectedTheme?.materials ?? [];
+    /** После загрузки детали темы — материалы из material.theme_id (как в БД); до этого — из списка learning-materials. */
+    const materialsRows =
+        themeDetail && !detailLoading
+            ? Array.isArray(themeDetail.materials)
+                ? themeDetail.materials
+                : catalogMaterials
+            : catalogMaterials;
+
+    const formatDeadline = (iso: string) => {
+        try {
+            const d = new Date(iso);
+            if (Number.isNaN(d.getTime())) return iso;
+            return d.toLocaleString('ru-RU', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+            });
+        } catch {
+            return iso;
+        }
+    };
 
     return (
         <div className="materials-page-container">
@@ -159,47 +255,114 @@ const StudentMaterials: React.FC = () => {
                                 <span className="content-topic-title">{selectedTheme.name}</span>
                             </header>
 
-                            {materials.length === 0 ? (
-                                <div className="content-body-sheet">
-                                    <p className="lecturer-text muted">
-                                        В этой теме пока нет прикреплённых материалов в базе.
-                                    </p>
-                                </div>
-                            ) : (
-                                <ul className="materials-article-list">
-                                    {materials.map((m) => (
-                                        <li key={m.id} className="material-article-card">
-                                            <div className="material-article-head">
-                                                <h3 className="material-article-title">{m.title}</h3>
-                                                <span className="content-type-badge">{m.type}</span>
-                                            </div>
-                                            <div className="material-article-body">
-                                                {m.url && (
-                                                    <p className="material-link-row">
-                                                        <a
-                                                            href={m.url}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="material-external-link"
-                                                        >
-                                                            {m.url}
-                                                        </a>
-                                                    </p>
-                                                )}
-                                                {m.description ? (
-                                                    <div className="lecturer-text material-description">
-                                                        {m.description}
-                                                    </div>
-                                                ) : (
-                                                    !m.url && (
-                                                        <p className="lecturer-text muted">Без описания.</p>
-                                                    )
-                                                )}
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
+                            {detailLoading && (
+                                <p className="lecturer-text muted materials-detail-loading">
+                                    Загрузка теории, заданий и материалов…
+                                </p>
                             )}
+                            {detailError && (
+                                <p className="lecturer-text materials-detail-err" role="alert">
+                                    {detailError}
+                                </p>
+                            )}
+
+                            {themeDetail && !detailLoading && !detailError && (
+                                <>
+                                    <section className="materials-detail-section" aria-labelledby="theory-heading">
+                                        <h2 id="theory-heading" className="materials-detail-heading">
+                                            Теория
+                                        </h2>
+                                        {!themeDetail.theory ? (
+                                            <p className="lecturer-text muted materials-empty-msg">
+                                                Теории по теме «{themeDetail.name}» нет.
+                                            </p>
+                                        ) : (
+                                            <>
+                                                {themeDetail.theory.title ? (
+                                                    <h3 className="materials-theory-subtitle">
+                                                        {themeDetail.theory.title}
+                                                    </h3>
+                                                ) : null}
+                                                <div className="lecturer-text materials-theory-body">
+                                                    {themeDetail.theory.content?.trim()
+                                                        ? themeDetail.theory.content
+                                                        : `Текста теории по теме «${themeDetail.name}» пока нет.`}
+                                                </div>
+                                            </>
+                                        )}
+                                    </section>
+
+                                    <section className="materials-detail-section" aria-labelledby="tasks-heading">
+                                        <h2 id="tasks-heading" className="materials-detail-heading">
+                                            Задания
+                                        </h2>
+                                        {(themeDetail.tasks?.length ?? 0) === 0 ? (
+                                            <p className="lecturer-text muted materials-empty-msg">
+                                                Заданий по теме «{themeDetail.name}» нет.
+                                            </p>
+                                        ) : (
+                                            <ul className="materials-task-list">
+                                                {themeDetail.tasks.map((task) => (
+                                                    <li key={task.id} className="materials-task-item">
+                                                        <p className="materials-task-text">{task.text}</p>
+                                                        <p className="materials-task-deadline">
+                                                            Срок: {formatDeadline(task.deadline)}
+                                                        </p>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
+                                    </section>
+                                </>
+                            )}
+
+                            <section className="materials-detail-section" aria-labelledby="materials-heading">
+                                <h2 id="materials-heading" className="materials-detail-heading">
+                                    Материалы темы
+                                </h2>
+                                {materialsRows.length === 0 ? (
+                                    <div className="content-body-sheet">
+                                        <p className="lecturer-text muted materials-empty-msg">
+                                            Материалов по теме «{selectedTheme.name}» нет.
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <ul className="materials-article-list">
+                                        {materialsRows.map((m) => (
+                                            <li key={m.id} className="material-article-card">
+                                                <div className="material-article-head">
+                                                    <h3 className="material-article-title">{m.title}</h3>
+                                                    <span className="content-type-badge">{m.type}</span>
+                                                </div>
+                                                <div className="material-article-body">
+                                                    {m.url && (
+                                                        <p className="material-link-row">
+                                                            <a
+                                                                href={m.url}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="material-external-link"
+                                                            >
+                                                                {m.url}
+                                                            </a>
+                                                        </p>
+                                                    )}
+                                                    {m.description ? (
+                                                        <div className="lecturer-text material-description">
+                                                            {m.description}
+                                                        </div>
+                                                    ) : (
+                                                        !m.url && (
+                                                            <p className="lecturer-text muted">Без описания.</p>
+                                                        )
+                                                    )}
+                                                </div>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </section>
+
                         </>
                     ) : !loading && !error && themes.length > 0 && !selectedTheme ? (
                         <div className="content-body-sheet">

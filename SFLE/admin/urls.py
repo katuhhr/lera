@@ -45,6 +45,8 @@ urlpatterns = [
     path('learning/themes/<int:pk>/', views.learning_theme_detail, name='learning_theme_detail'),
     path('learning/materials/', views.learning_material_create, name='learning_material_create'),
     path('learning/materials/<int:pk>/', views.learning_material_detail, name='learning_material_detail'),
+    path('learning/tasks/', views.learning_task_create, name='learning_task_create'),
+    path('learning/tasks/<int:pk>/', views.learning_task_detail, name='learning_task_detail'),
 
     # Самоподготовка (только чтение; наполнение через БД / админку)
     path('teacher/self-study/', views.teacher_self_study, name='teacher_self_study'),

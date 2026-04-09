@@ -166,6 +166,10 @@
     white-space: pre-wrap;
 }
 
+.self-study-detail-body {
+    text-align: left;
+}
+
 .self-study-readonly-empty {
     margin: 0;
     font-size: 15px;

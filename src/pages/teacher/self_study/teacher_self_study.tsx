@@ -1,12 +1,19 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ArrowLeft, Folder } from 'lucide-react';
 import { authFetch } from '../../../api/authFetch';
+import SelfStudyTopicBody, {
+    type SelfStudyMaterialRow,
+    type SelfStudyTaskRow,
+} from '../../../components/self_study/SelfStudyTopicBody';
 import './teacher_self_study.css';
 
 interface SelfStudyRow {
     id: number;
     title: string;
     content: string;
+    kind?: 'self_study' | 'common_theme';
+    materials?: SelfStudyMaterialRow[];
+    tasks?: SelfStudyTaskRow[];
 }
 
 const TeacherSelfStudy: React.FC = () => {
@@ -41,8 +48,14 @@ const TeacherSelfStudy: React.FC = () => {
                 setTopics([]);
                 return;
             }
-            const data = (payload as { data?: SelfStudyRow[] }).data || [];
-            setTopics(data);
+            const raw = (payload as { data?: SelfStudyRow[] }).data || [];
+            setTopics(
+                raw.map((t) => ({
+                    ...t,
+                    materials: Array.isArray(t.materials) ? t.materials : [],
+                    tasks: Array.isArray(t.tasks) ? t.tasks : [],
+                })),
+            );
         } catch {
             setError('Нет связи с сервером.');
             setTopics([]);
@@ -72,12 +85,13 @@ const TeacherSelfStudy: React.FC = () => {
                                 </button>
                             </div>
                         </div>
-                        <div className="self-study-editor-wrap self-study-readonly-body">
-                            {selectedTopic.content ? (
-                                <div className="self-study-readonly-text">{selectedTopic.content}</div>
-                            ) : (
-                                <p className="self-study-readonly-empty">Текст в базе не задан.</p>
-                            )}
+                        <div className="self-study-editor-wrap self-study-readonly-body self-study-detail-body">
+                            <SelfStudyTopicBody
+                                topicTitle={selectedTopic.title}
+                                content={selectedTopic.content}
+                                materials={selectedTopic.materials ?? []}
+                                tasks={selectedTopic.tasks ?? []}
+                            />
                         </div>
                     </div>
                 </main>
@@ -92,9 +106,6 @@ const TeacherSelfStudy: React.FC = () => {
                     <div className="self-study-header self-study-header-list">
                         <div className="self-study-header-left">
                             <h2 className="self-study-title">Самоподготовка</h2>
-                            <p className="self-study-hint">
-                                Общие учебные темы (без специальности и курса в базе). Только просмотр.
-                            </p>
                         </div>
                     </div>
 
@@ -107,7 +118,7 @@ const TeacherSelfStudy: React.FC = () => {
 
                     <div className="self-study-list">
                         {topics.map((topic) => (
-                            <div key={topic.id} className="self-study-item-wrap">
+                            <div key={`${topic.kind ?? 'row'}-${topic.id}`} className="self-study-item-wrap">
                                 <button
                                     type="button"
                                     className="self-study-pill self-study-pill-readonly"

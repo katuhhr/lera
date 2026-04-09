@@ -264,6 +264,83 @@
     padding: 10px;
 }
 
+.materials-detail-loading {
+    margin: 0 0 16px;
+}
+
+.materials-detail-err {
+    color: #b91c1c;
+    background: #fef2f2;
+    padding: 10px 14px;
+    border-radius: 10px;
+    margin: 0 0 16px;
+}
+
+.materials-detail-section {
+    margin-bottom: clamp(20px, 3vw, 32px);
+}
+
+.materials-detail-section:last-of-type {
+    margin-bottom: 0;
+}
+
+.materials-detail-heading {
+    font-size: 17px;
+    font-weight: 600;
+    color: #1e3a8a;
+    margin: 0 0 8px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e0e7ff;
+}
+
+.materials-empty-msg {
+    margin: 0;
+    line-height: 1.5;
+}
+
+.materials-theory-subtitle {
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 10px;
+}
+
+.materials-theory-body {
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.55;
+    color: #374151;
+}
+
+.materials-task-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.materials-task-item {
+    padding: 14px 16px;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.materials-task-text {
+    margin: 0 0 8px;
+    font-size: 15px;
+    line-height: 1.45;
+    color: #111827;
+}
+
+.materials-task-deadline {
+    margin: 0;
+    font-size: 13px;
+    color: #64748b;
+}
+
 .lecturer-text {
     font-size: 16px;
     line-height: 1.6;

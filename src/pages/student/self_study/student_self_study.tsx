@@ -1,5 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, Folder } from 'lucide-react';
+import SelfStudyTopicBody, {
+    type SelfStudyMaterialRow,
+    type SelfStudyTaskRow,
+} from '../../../components/self_study/SelfStudyTopicBody';
 import './student_self_study.css';
 import { apiUrl } from '../../../config';
 
@@ -8,6 +12,8 @@ type SelfStudyTopic = {
     title: string;
     content: string;
     kind?: 'self_study' | 'common_theme';
+    materials?: SelfStudyMaterialRow[];
+    tasks?: SelfStudyTaskRow[];
 };
 
 const StudentSelfStudy: React.FC = () => {
@@ -46,7 +52,14 @@ const StudentSelfStudy: React.FC = () => {
                     );
                 }
                 const payload = json as { data?: SelfStudyTopic[] };
-                setTopics(Array.isArray(payload.data) ? payload.data : []);
+                const rows = Array.isArray(payload.data) ? payload.data : [];
+                setTopics(
+                    rows.map((t) => ({
+                        ...t,
+                        materials: Array.isArray(t.materials) ? t.materials : [],
+                        tasks: Array.isArray(t.tasks) ? t.tasks : [],
+                    })),
+                );
             } catch (e) {
                 const msg = e instanceof Error ? e.message : 'Ошибка загрузки самоподготовки';
                 setError(msg);
@@ -73,12 +86,13 @@ const StudentSelfStudy: React.FC = () => {
                         <div className="topic-title-badge">{selectedTopic.title}</div>
                     </header>
 
-                    <div className="topic-sheet-content">
-                        {selectedTopic.content ? (
-                            <div className="material-text-content">{selectedTopic.content}</div>
-                        ) : (
-                            <p className="study-self-empty">Для этой темы пока нет описания.</p>
-                        )}
+                    <div className="topic-sheet-content topic-sheet-content-self-study">
+                        <SelfStudyTopicBody
+                            topicTitle={selectedTopic.title}
+                            content={selectedTopic.content}
+                            materials={selectedTopic.materials ?? []}
+                            tasks={selectedTopic.tasks ?? []}
+                        />
                     </div>
                 </main>
             </div>
