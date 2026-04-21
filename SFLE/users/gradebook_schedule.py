@@ -1,5 +1,3 @@
-"""Заголовки колонок ведомости по датам занятий из расписания."""
-
 from __future__ import annotations
 
 import re
@@ -14,7 +12,6 @@ from users.models import Group, Schedule
 
 
 def _norm_group_key(s: str) -> str:
-    """Нормализация имени группы: NFC, нижний регистр, без пробелов и дефисов, ё→е."""
     t = (s or '').strip()
     t = unicodedata.normalize('NFC', t)
     t = t.lower()
@@ -23,7 +20,6 @@ def _norm_group_key(s: str) -> str:
 
 
 def _schedule_qs_narrowed_by_suffix(base, group_name: str):
-    """Ограничить выборку расписания по цифрам в конце названия (405, 304), чтобы быстрее искать совпадения."""
     m = re.search(r'(\d{2,4})$', (group_name or '').strip())
     if not m:
         return base
@@ -31,13 +27,6 @@ def _schedule_qs_narrowed_by_suffix(base, group_name: str):
 
 
 def _schedule_group_names_equivalent_to_group(group: Group) -> list[str] | None:
-    """
-    Сырые значения schedule.group_name, которые относятся к этой учебной группе.
-
-    None — достаточно фильтра group_name__iexact по group.name (быстрый путь).
-    Непустой список — использовать group_name__in=...
-    Пустой список — в расписании не найдено ни одной подходящей строки.
-    """
     gn = (group.name or '').strip()
     if not gn:
         return []
@@ -90,11 +79,7 @@ def gradebook_column_headers_from_schedule(
     n_columns: int,
     fallback_titles: list[str] | None = None,
 ) -> list[str]:
-    """
-    Заголовки — дата занятия (ДД.ММ.ГГГГ), без времени.
-    Порядок = хронология занятий в schedule; имя в расписании может отличаться от group.name.
-    Если занятий не хватает — подставляются fallback_titles из БД.
-    """
+
     if n_columns <= 0:
         return []
     fb = fallback_titles or []

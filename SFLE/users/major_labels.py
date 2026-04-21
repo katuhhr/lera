@@ -1,10 +1,3 @@
-"""Подписи специальности для UI.
-
-Используются колонки таблицы major (если есть), по приоритету:
-short_name → code → abbr → abbreviation → kod.
-Иначе — поле name. ORM не требует этих колонок в модели Major.
-"""
-
 from django.db import connection
 
 # Порядок важен: первая непустая колонка даёт краткую подпись (ИСПк, Рк, …).
@@ -14,7 +7,6 @@ _abbr_columns_cache: list[str] | None = None
 
 
 def _major_abbr_column_names() -> list[str]:
-    """Имена колонок в текущей схеме (lower case), в порядке приоритета."""
     global _abbr_columns_cache
     if _abbr_columns_cache is not None:
         return _abbr_columns_cache
@@ -37,7 +29,6 @@ def _label_coalesce_sql(cols: list[str]) -> str:
 
 
 def majors_for_learning_catalog():
-    """Строки для каталогов (учебные материалы, ведомость): id, name, label, short_name."""
     cols = _major_abbr_column_names()
     with connection.cursor() as cur:
         if cols:
@@ -88,7 +79,6 @@ def major_display_label(major_id: int | None) -> str | None:
 
 
 def major_theory_bundle_label(major_id: int, course_number: int) -> str:
-    """Имя обёрточной theory для пары специальность + курс (как в интерфейсе)."""
     label = major_display_label(major_id) or ''
     return f'{label} — {course_number}'
 

@@ -95,7 +95,7 @@ class Group(models.Model):
 
 
 class UserTeachingGroup(models.Model):
-    """Закрепление преподавателя за учебными группами (отдельная таблица user_teaching_groups)."""
+    #Закрепление преподавателя за учебными группами (отдельная таблица user_teaching_groups)
 
     user = models.ForeignKey(
         'User',
@@ -118,7 +118,6 @@ class UserTeachingGroup(models.Model):
 
 
 class GradebookSheet(models.Model):
-    """Ведомость: заголовки колонок и оценки по студентам группы (JSON)."""
     group = models.OneToOneField(
         Group,
         on_delete=models.CASCADE,
@@ -165,7 +164,6 @@ class Major(models.Model):
 
 
 class Schedule(models.Model):
-    """Соответствует таблице schedule в PostgreSQL (sfle_db)."""
     id = models.AutoField(primary_key=True)
     group_name = models.CharField(max_length=200, verbose_name='Группа')
     day_of_week = models.CharField(max_length=20, verbose_name='День недели')
@@ -403,7 +401,7 @@ class Theme(models.Model):
 
 
 class Material(models.Model):
-    """Учебные материалы; таблица material (theme_id → theme)."""
+    #Учебные материалы; таблица material (theme_id → theme)
     id = models.AutoField(primary_key=True)
     theme = models.ForeignKey(
         Theme, on_delete=models.CASCADE, related_name='materials', verbose_name='Тема',

@@ -1,5 +1,3 @@
-"""Аутентификация по email или username (сессии, при необходимости)."""
-
 from django.contrib.auth.backends import ModelBackend
 
 

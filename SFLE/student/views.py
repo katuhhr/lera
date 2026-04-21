@@ -30,7 +30,6 @@ _DEFAULT_GRADEBOOK_COLUMNS = ('Урок №1', 'Диалог', 'Урок №2', 
 
 
 def _student_progress_display_name(student: User) -> str:
-    """Фамилия и имя для экрана успеваемости."""
     ln = (student.last_name or '').strip()
     fn = (student.first_name or '').strip()
     if ln and fn:
@@ -41,7 +40,6 @@ def _student_progress_display_name(student: User) -> str:
 
 
 def _gradebook_row_for_student(student: User) -> dict | None:
-    """Колонки ведомости группы и строка оценок текущего студента (как у преподавателя в gradebook)."""
     if not student or not getattr(student, 'group_id', None):
         return None
     group = student.group
@@ -98,7 +96,6 @@ def _gradebook_row_for_student(student: User) -> dict | None:
 
 
 def _get_current_student(request):
-    """Текущий авторизованный студент."""
     user = getattr(request, 'user', None)
     if (
         getattr(user, 'is_authenticated', False)
@@ -110,7 +107,6 @@ def _get_current_student(request):
 
 
 def _theme_ids_for_major_course(major_id: int, course_id: int) -> list:
-    """Темы с привязкой к специальности и курсу (поля theme.major_id, theme.course_id)."""
     return list(
         Theme.objects.filter(major_id=major_id, course_id=course_id)
         .order_by('id')
@@ -119,7 +115,6 @@ def _theme_ids_for_major_course(major_id: int, course_id: int) -> list:
 
 
 def _task_theme_filter_for_student(student: User | None) -> Q:
-    """Задания только по темам учебного плана группы; общие темы — в самоподготовке."""
     if not student or not getattr(student, 'group_id', None):
         return Q(pk__in=[])
     g = student.group
@@ -129,7 +124,6 @@ def _task_theme_filter_for_student(student: User | None) -> Q:
 
 
 def _theme_ids_for_student(student):
-    """Темы учебного плана группы (major+course на теме). Общие без привязки — только в самоподготовке."""
     if not student or not student.group_id:
         return []
     group = student.group
@@ -231,7 +225,6 @@ def get_dashboard(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_themes(request):
-    """Получить темы уроков для курса/специальности текущего студента."""
     student = _get_current_student(request)
     if not student:
         return Response({'status': 'error', 'message': 'Студент не найден'}, status=404)
@@ -252,7 +245,6 @@ def get_themes(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_theme_detail(request, theme_id):
-    """Детали темы: теория (theme.theory_id), файлы к теории, задания (task.theme_id), материалы (material.theme_id)."""
     student = User.objects.filter(pk=request.user.pk).first()
     if not student or (getattr(student, 'role', None) or '').lower() != 'student':
         return Response({'status': 'error', 'message': 'Студент не найден'}, status=404)
@@ -456,7 +448,6 @@ def get_progress(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_learning_materials(request):
-    """Темы с материалами только по специальности и курсу группы студента (без общих тем — они в самоподготовке)."""
     student = (
         User.objects.select_related('group__major', 'group__course')
         .filter(pk=request.user.pk)
@@ -534,7 +525,6 @@ def get_learning_materials(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_self_study(request):
-    """Общая самоподготовка: таблица self_study_theme + темы без привязки к специальности/курсу."""
     if (getattr(request.user, 'role', None) or '').lower() != 'student':
         return Response(
             {'status': 'error', 'message': 'Раздел доступен только студентам.'},

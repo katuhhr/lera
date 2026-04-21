@@ -81,7 +81,7 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class GroupOptionSerializer(serializers.ModelSerializer):
-    """Справочник групп для выпадающих списков (id + name из таблицы group)."""
+    #Справочник групп для выпадающих списков (id + name из таблицы group)
 
     class Meta:
         model = Group

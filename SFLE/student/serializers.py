@@ -30,7 +30,7 @@ class TheoryLearningTreeSerializer(serializers.ModelSerializer):
 
 
 class ThemeCatalogSerializer(serializers.ModelSerializer):
-    """Тема с материалами; для привязанных тем — название специальности и номер курса."""
+    #Тема с материалами; для привязанных тем — название специальности и номер курса
     materials = MaterialNodeSerializer(many=True, read_only=True)
     major_name = serializers.SerializerMethodField()
     course_number = serializers.SerializerMethodField()
@@ -64,7 +64,7 @@ class ThemeCatalogSerializer(serializers.ModelSerializer):
 
 
 class StudentProfileSerializer(serializers.ModelSerializer):
-    """Поля имён — напрямую из колонок БД firstname/lastname (модель: first_name/last_name)."""
+    #Поля имён — напрямую из колонок БД firstname/lastname (модель: first_name/last_name)
 
     firstname = serializers.SerializerMethodField()
     lastname = serializers.SerializerMethodField()
@@ -124,7 +124,7 @@ class ThemeListSerializer(serializers.ModelSerializer):
 
 
 class ThemeDetailSerializer(serializers.ModelSerializer):
-    """Связи: theme.theory_id, theme.major_id/course_id, task.theme_id, material.theme_id (ссылки к теме — в material)."""
+    #Связи: theme.theory_id, theme.major_id/course_id, task.theme_id, material.theme_id (ссылки к теме — в material)
 
     theory = serializers.SerializerMethodField()
     tasks = serializers.SerializerMethodField()
@@ -155,7 +155,6 @@ class ThemeDetailSerializer(serializers.ModelSerializer):
         ]
 
     def get_materials(self, obj):
-        """Строки таблицы material с material.theme_id = тема."""
         try:
             qs = Material.objects.filter(theme_id=obj.pk).order_by('id')
             return MaterialNodeSerializer(qs, many=True).data
@@ -213,7 +212,7 @@ class TestResultSerializer(serializers.Serializer):
 class TaskStatusSerializer(serializers.Serializer):
     task_name = serializers.CharField()
     deadline = serializers.DateTimeField()
-    status = serializers.CharField()  # 'submitted', 'not_submitted', 'checked'
+    status = serializers.CharField() 
     grade = serializers.IntegerField(allow_null=True)
 
 
@@ -227,7 +226,7 @@ class SelfStudySerializer(serializers.ModelSerializer):
 
 
 class ThemeCommonSelfStudySerializer(serializers.ModelSerializer):
-    """Общие темы: запись `theme` без специальности и курса; текст из `theory`."""
+    #Общие темы: запись theme без специальности и курса; текст из theory
 
     title = serializers.CharField(source='name')
     content = serializers.CharField(source='theory.text', allow_blank=True, read_only=True)

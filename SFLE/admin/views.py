@@ -42,7 +42,6 @@ def _is_teacher_role(user) -> bool:
 
 
 def _teacher_assigned_group_ids(user) -> set:
-    """ID учебных групп: таблица user_teaching_groups + legacy user.group_id."""
     if not _is_teacher_role(user):
         return set()
     ids = set(
@@ -351,12 +350,12 @@ def create_group(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_teacher_registration_requests(request):
-    """Список заявок на подтверждение регистрации для текущего преподавателя."""
+    #Список заявок на подтверждение регистрации для текущего преподавателя
     teacher = request.user
     if not _is_teacher_role(teacher):
         return Response({'detail': 'Доступ запрещен'}, status=403)
 
-    # Синхронизация legacy user.group_id → user_teaching_groups (если строки ещё нет).
+    # Синхронизация legacy user.group_id → user_teaching_groups (если строки ещё нет)
     if teacher.group_id:
         UserTeachingGroup.objects.get_or_create(user_id=teacher.pk, group_id=teacher.group_id)
 
@@ -404,7 +403,7 @@ def get_teacher_registration_requests(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def approve_teacher_registration_request(request, req_id: int):
-    """Принять подтверждение студента."""
+    #Принять подтверждение студента
     teacher = request.user
     if not _is_teacher_role(teacher):
         return Response({'detail': 'Доступ запрещен'}, status=403)
@@ -452,7 +451,7 @@ def approve_teacher_registration_request(request, req_id: int):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def reject_teacher_registration_request(request, req_id: int):
-    """Отклонить подтверждение студента."""
+    #Отклонить подтверждение студента
     teacher = request.user
     if not _is_teacher_role(teacher):
         return Response({'detail': 'Доступ запрещен'}, status=403)
@@ -480,7 +479,6 @@ _SCHEDULE_DAYS_RU = (
 
 
 def _canonical_group_name(raw: str):
-    """Имя группы как в таблице group (связь schedule.group_name → group.name)."""
     s = (raw or '').strip()
     if not s:
         return None
@@ -491,7 +489,7 @@ def _canonical_group_name(raw: str):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def teacher_group_options(request):
-    """Группы из БД для расписания — только закреплённые за преподавателем."""
+    #Группы из БД для расписания — только закреплённые за преподавателем
     if getattr(request.user, 'role', None) != 'teacher':
         return Response({'detail': 'Только для преподавателя'}, status=403)
     gids = _teacher_assigned_group_ids(request.user)
@@ -516,10 +514,6 @@ def _parse_schedule_time(value):
 @api_view(['GET', 'PUT'])
 @permission_classes([IsAuthenticated])
 def teacher_schedule_week(request):
-    """Неделя расписания: чтение из таблицы schedule, сохранение при PUT.
-    GET отдаёт все строки за интервал (пн–сб): данные БД без скрытой фильтрации.
-    group_name в schedule согласован с group.name через валидацию при PUT.
-    """
     user = request.user
     if getattr(user, 'role', None) != 'teacher':
         return Response({'detail': 'Только для преподавателя'}, status=403)
@@ -603,7 +597,7 @@ def teacher_schedule_week(request):
         })
 
     # Только строки своих групп за эту неделю; иначе при exclude(id__in=keep).delete()
-    # стиралось расписание всех преподавателей за интервал.
+    # стиралось расписание всех преподавателей за интервал
     with transaction.atomic():
         base = Schedule.objects.filter(
             lesson_date__gte=ws,
@@ -668,7 +662,6 @@ def _learning_tree_queryset():
 
 
 def _theory_for_major_course(major: Major, course: Course) -> Theory:
-    """Одна «обёрточная» теория на пару специальность + курс (для FK theme.theory)."""
     label = major_theory_bundle_label(major.id, course.number)
     th, _ = Theory.objects.get_or_create(name=label, defaults={'text': ''})
     return th
@@ -677,7 +670,7 @@ def _theory_for_major_course(major: Major, course: Course) -> Theory:
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def learning_catalog(request):
-    """Учебные группы → курсы для бокового меню; материалы по major группы + выбранный курс."""
+    #Учебные группы → курсы для бокового меню; материалы по major группы + выбранный курс
     if not _teacher_only(request.user):
         return Response({'detail': 'Только для преподавателя'}, status=403)
     # В БД могут существовать несколько Course с одинаковым number (из-за тестовых/черновых данных).
@@ -719,7 +712,6 @@ def learning_catalog(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def learning_topics(request):
-    """Темы (с материалами) для пары специальность + курс (major_id с выбранной учебной группы)."""
     if not _teacher_only(request.user):
         return Response({'detail': 'Только для преподавателя'}, status=403)
     mid = request.query_params.get('major_id')
@@ -1038,7 +1030,6 @@ def learning_task_detail(request, pk: int):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def teacher_self_study(request):
-    """Самоподготовка: те же темы, что у студента (теория, материалы, задания). Только просмотр."""
     if not _teacher_only(request.user):
         return Response({'detail': 'Только для преподавателя'}, status=403)
     return Response({'status': 'success', 'data': build_self_study_items()})
@@ -1084,7 +1075,6 @@ def _normalize_gradebook_cells(sheet):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def gradebook_groups(request):
-    """Учебные группы для ведомости — только закреплённые за преподавателем."""
     if not _teacher_only(request.user):
         return Response({'detail': 'Только для преподавателя'}, status=403)
     gids = _teacher_assigned_group_ids(request.user)

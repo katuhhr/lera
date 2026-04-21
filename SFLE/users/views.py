@@ -13,11 +13,10 @@ from users.models import Group, User, Request, UserTeachingGroup
 
 
 def _sync_teacher_group_links_for_group(group) -> None:
-    """Добавляет строки в user_teaching_groups для преподов с legacy group_id = эта группа.
+    #Добавляет строки в user_teaching_groups для преподов с legacy group_id = эта группа.
 
-    Так заявки студентов видны и тем, у кого в БД заполнено только поле user.group_id
-    (без строк в M2M), и список совпадает с логикой «кто ведёт группу» в админке.
-    """
+    # Так заявки студентов видны и тем, у кого в БД заполнено только поле user.group_id
+    # (без строк в M2M), и список совпадает с логикой «кто ведёт группу» в админке
     if group is None:
         return
     teacher_ids = User.objects.filter(role__iexact='teacher', group_id=group.id).values_list(
@@ -30,7 +29,7 @@ def _sync_teacher_group_links_for_group(group) -> None:
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def register_group_options(request):
-    """Список групп для регистрации студента (без авторизации)."""
+    #Список групп для регистрации студента (без авторизации)
     qs = Group.objects.select_related('major', 'course').order_by('major_id', 'course_id', 'name')
     data = [
         {
@@ -44,7 +43,6 @@ def register_group_options(request):
 
 
 class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
-    """Allow JWT login by email for frontend auth form."""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -84,11 +82,10 @@ class EmailTokenObtainPairView(TokenObtainPairView):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register(request):
-    """Регистрация студента/преподавателя.
-    Студент: создаётся неактивный user с выбранной группой и заявка преподавателю;
-    после одобрения преподаватель активирует аккаунт (вход, ведомость и т.д.).
-    Преподаватель: неактивен до одобрения администратором.
-    """
+    # Регистрация студента/преподавателя.
+    # Студент: создаётся неактивный user с выбранной группой и заявка преподавателю;
+    # после одобрения преподаватель активирует аккаунт (вход, ведомость и т.д.).
+    # Преподаватель: неактивен до одобрения администратором
     email = (request.data.get('email') or '').strip().lower()
     password = request.data.get('password') or ''
     full_name = (request.data.get('full_name') or '').strip()
@@ -194,7 +191,6 @@ def register(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def me(request):
-    """Текущий пользователь (для редиректов в UI)."""
     u = request.user
     group_name = u.group.name if getattr(u, 'group', None) else None
     return Response(

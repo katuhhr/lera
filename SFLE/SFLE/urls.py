@@ -19,7 +19,6 @@ from django.urls import path, include
 
 
 def root(_request):
-    """Корень сайта: явный нормальный HTTP-ответ (на / раньше не было маршрута)."""
     body = (
         '<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8">'
         '<title>SFLE</title></head><body>'

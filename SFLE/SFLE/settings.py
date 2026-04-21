@@ -3,16 +3,16 @@ from pathlib import Path
 from datetime import timedelta
 import sys
 
-# 1. Пути
+#Пути
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, os.path.join(BASE_DIR))
 
-# 2. Безопасность
+#Безопасность
 SECRET_KEY = 'django-insecure-your-secret-key-here'
-DEBUG = True  # Не забудь выключить в продакшене
+DEBUG = True 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '[::1]']
 
-# 3. Приложения
+#Приложения
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -46,7 +46,7 @@ TEMPLATES = [
         },
     },
 ]
-# 4. Middleware
+#Middleware
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',  # Должен быть высоко
@@ -61,19 +61,19 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'SFLE.urls'
 WSGI_APPLICATION = 'SFLE.wsgi.application'
 
-# 5. База данных (PostgreSQL) — тот же сервер, что и в psycopg2.connect(host=..., ...)
+#База данных 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'sfle_db',
-        'USER': 'postgres',           # или 'postgres'
+        'USER': 'postgres',           
         'PASSWORD': '123456',
         'HOST': 'localhost',
         'PORT': '5432',
     }
 }
 
-# 6. Пользователь и валидация
+#Пользователь и валидация
 AUTH_USER_MODEL = 'users.User'
 
 AUTHENTICATION_BACKENDS = [
@@ -88,7 +88,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# 7. DRF и JWT
+#DRF и JWT
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -105,7 +105,7 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-# 8. CORS (только для fetch/XHR с фронта; прямой заход в браузере на :8000 к CORS не относится)
+#CORS (только для fetch/XHR с фронта; прямой заход в браузере на :8000 к CORS не относится)
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
@@ -116,7 +116,7 @@ CORS_ALLOWED_ORIGINS = [
 ]
 CORS_ALLOW_CREDENTIALS = True
 
-# 9. Локализация и статика
+#Локализация и статика
 LANGUAGE_CODE = 'ru-ru'
 TIME_ZONE = 'Europe/Moscow'
 USE_I18N = True
