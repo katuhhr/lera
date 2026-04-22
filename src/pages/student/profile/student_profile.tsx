@@ -5,16 +5,11 @@ import './student_profile.css';
 import { authFetch } from '../../../api/authFetch';
 
 type StudentProfileData = {
-    id: number;
-    username: string;
     firstname: string;
     lastname: string;
     full_name: string;
-    email: string;
     role: string;
     group_name: string | null;
-    major_name: string | null;
-    course_number: number | null;
     is_active: boolean;
 };
 

@@ -7,7 +7,6 @@ type DashboardTask = {
     title: string;
     theme: string;
     deadline?: string;
-    date?: string;
 };
 
 function formatLoadError(payload: unknown, fallback: string): string {

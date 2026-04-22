@@ -68,7 +68,7 @@ DATABASES = {
         'NAME': 'sfle_db',
         'USER': 'postgres',           
         'PASSWORD': '123456',
-        'HOST': 'localhost',
+        'HOST': '185.28.85.111',
         'PORT': '5432',
     }
 }

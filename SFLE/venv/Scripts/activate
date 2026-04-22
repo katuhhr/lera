@@ -35,7 +35,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="c:\Users\ivano\OneDrive\Рабочий стол\3 курс\БД самоделкин\SFLE\SFLE\venv"
+VIRTUAL_ENV="C:\Users\User\Documents\GitHub\SFLE\SFLE\venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

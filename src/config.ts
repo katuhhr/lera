@@ -8,9 +8,7 @@ const explicit = process.env.REACT_APP_API_ORIGIN;
 const origin =
     explicit != null && String(explicit).trim() !== ''
         ? String(explicit).replace(/\/$/, '')
-        : process.env.NODE_ENV === 'development'
-          ? ''
-          : '';
+        : '';
 
 export function apiUrl(path: string): string {
     const p = path.startsWith('/') ? path : `/${path}`;

@@ -8,7 +8,6 @@ export interface SelfStudyMaterialRow {
     type: string;
     url: string | null;
     description: string | null;
-    created_at?: string | null;
 }
 
 export interface SelfStudyTaskRow {

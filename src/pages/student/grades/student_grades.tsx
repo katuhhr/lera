@@ -3,7 +3,6 @@ import './student_grades.css';
 import { authFetch } from '../../../api/authFetch';
 
 type GradebookPayload = {
-    group_name?: string;
     student_name?: string;
     column_titles: string[];
     values: string[];
@@ -85,26 +84,24 @@ const StudentGrades: React.FC = () => {
                         </p>
                     )}
                     {!loading && !error && hasGradebookCols && gradebook && (
-                        <>
-                            <div className="grades-table-wrapper gradebook-table-wrap">
-                                <table className="grades-table gradebook-table">
-                                    <thead>
-                                        <tr>
-                                            {gradebook.column_titles.map((title, i) => (
-                                                <th key={i}>{title.trim() ? title : '—'}</th>
-                                            ))}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            {gradebook.values.map((v, i) => (
-                                                <td key={i}>{v.trim() ? v : '—'}</td>
-                                            ))}
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </>
+                        <div className="grades-table-wrapper gradebook-table-wrap">
+                            <table className="grades-table gradebook-table">
+                                <thead>
+                                    <tr>
+                                        {gradebook.column_titles.map((title, i) => (
+                                            <th key={i}>{title.trim() ? title : '—'}</th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        {gradebook.values.map((v, i) => (
+                                            <td key={i}>{v.trim() ? v : '—'}</td>
+                                        ))}
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     )}
                 </section>
             </div>

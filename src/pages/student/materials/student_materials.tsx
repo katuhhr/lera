@@ -9,7 +9,6 @@ interface MaterialRow {
     type: string;
     url: string | null;
     description: string | null;
-    created_at?: string | null;
 }
 
 interface ThemeRow {

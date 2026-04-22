@@ -7,7 +7,6 @@ import './admin_page.css';
 interface ApiApplication {
     id: number;
     full_name: string;
-    user_email?: string;
     type: string;
 }
 
@@ -79,7 +78,6 @@ const AdminPage: FC = () => {
                     rows.map((t) => ({
                         id: t.id,
                         fullName: (t.full_name || '').trim() || t.email || `Пользователь ${t.id}`,
-                        role: 'Преподаватель',
                     })),
                 );
             }
